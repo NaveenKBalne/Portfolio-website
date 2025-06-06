@@ -1,10 +1,14 @@
 import React, { useRef, useEffect } from "react";
 import * as THREE from "three";
 
-export default function ThreeBG() {
-  const mountRef = useRef();
+const ThreeBG = () => {
+  const mountRef = useRef(null);
+  const scrollSpeedRef = useRef(0);
+  const lastScrollY = useRef(window.scrollY);
 
   useEffect(() => {
+    if (!mountRef.current) return;
+
     // Scene setup
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
@@ -13,67 +17,55 @@ export default function ThreeBG() {
       0.1,
       1000
     );
-    camera.position.z = 5;
+    camera.position.z = 120; // Move camera further back
+    camera.lookAt(0, 0, 0);
 
-    // Renderer
-    const renderer = new THREE.WebGLRenderer({ alpha: true });
-    renderer.setClearColor(0x000000, 0);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.domElement.style.position = "fixed";
-    renderer.domElement.style.top = 0;
-    renderer.domElement.style.left = 0;
-    renderer.domElement.style.width = "100vw";
-    renderer.domElement.style.height = "100vh";
-    renderer.domElement.style.zIndex = 0;
-    renderer.domElement.style.opacity = 0.5;
-    renderer.domElement.style.pointerEvents = "none";
+    renderer.setClearColor(0x000000, 0);
 
-    if (mountRef.current && !mountRef.current.hasChildNodes()) {
-      mountRef.current.appendChild(renderer.domElement);
+    // Prevent duplicate canvas
+    while (mountRef.current.firstChild) {
+      mountRef.current.removeChild(mountRef.current.firstChild);
     }
+    mountRef.current.appendChild(renderer.domElement);
 
-    // Geometry (animated points)
-    const geometry = new THREE.BufferGeometry();
-    const numPoints = 120;
-    const positions = new Float32Array(numPoints * 3);
-    for (let i = 0; i < numPoints; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 12;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 8;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 8;
+    // Helix geometry (horizontal)
+    const points = [];
+    const turns = 6;
+    const radius = 35; // Increased radius
+    const length = 100; // Increased length
+    const segments = 400;
+    for (let i = 0; i < segments; i++) {
+      const t = (i / segments) * Math.PI * 2 * turns;
+      const x = (i / segments - 0.5) * length;
+      const y = Math.cos(t) * radius;
+      const z = Math.sin(t) * radius;
+      points.push(new THREE.Vector3(x, y, z));
     }
-    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    const material = new THREE.PointsMaterial({
-      color: 0x6a11cb,
-      size: 0.18,
-      opacity: 0.7,
-      transparent: true,
-    });
-    const points = new THREE.Points(geometry, material);
-    scene.add(points);
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const material = new THREE.LineBasicMaterial({ color: 0x00ffff, linewidth: 3 });
+    const helix = new THREE.Line(geometry, material);
+    scene.add(helix);
 
-    // Animation loop with scroll speed displacement
+    // Animation loop
     let frameId;
-    let lastScrollY = window.scrollY || window.pageYOffset;
-    let cameraOffsetY = 0;
-
     const animate = () => {
-      const currentScrollY = window.scrollY || window.pageYOffset;
-      const scrollSpeed = currentScrollY - lastScrollY;
-      lastScrollY = currentScrollY;
-
-      // Move camera by scroll speed (damped for smoothness)
-      cameraOffsetY += scrollSpeed * 0.08; // Adjust multiplier for effect strength
-      cameraOffsetY *= 0.92; // Damping for smooth return
-
-      camera.position.y = cameraOffsetY;
-
-      points.rotation.y += 0.002 + Math.abs(scrollSpeed) * 0.0001;
-      points.rotation.x += 0.001 + Math.abs(scrollSpeed) * 0.00005;
-
+      scrollSpeedRef.current *= 0.92;
+      helix.rotation.x += scrollSpeedRef.current * 0.02;
       renderer.render(scene, camera);
       frameId = requestAnimationFrame(animate);
     };
     animate();
+
+    // Scroll event handler
+    const onScroll = () => {
+      const newY = window.scrollY;
+      const delta = newY - lastScrollY.current;
+      scrollSpeedRef.current = delta;
+      lastScrollY.current = newY;
+    };
+    window.addEventListener("scroll", onScroll);
 
     // Handle resize
     const handleResize = () => {
@@ -87,13 +79,13 @@ export default function ThreeBG() {
     return () => {
       cancelAnimationFrame(frameId);
       window.removeEventListener("resize", handleResize);
-      renderer.dispose();
-      if (
-        mountRef.current &&
-        renderer.domElement.parentNode === mountRef.current
-      ) {
+      window.removeEventListener("scroll", onScroll);
+      if (mountRef.current && renderer.domElement) {
         mountRef.current.removeChild(renderer.domElement);
       }
+      geometry.dispose();
+      material.dispose();
+      renderer.dispose();
     };
   }, []);
 
@@ -102,10 +94,15 @@ export default function ThreeBG() {
       ref={mountRef}
       style={{
         position: "fixed",
-        inset: 0,
-        zIndex: 0,
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        zIndex: -1,
         pointerEvents: "none",
       }}
     />
   );
-}
+};
+
+export default ThreeBG;

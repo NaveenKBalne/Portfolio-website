@@ -97,7 +97,7 @@ export default function App() {
   };
 
   return (
-    <div style={{position: "relative", minHeight: "100vh", overflow: "hidden"}}>
+    <>
       <ThreeBG />
       <div style={{position: "relative", zIndex: 2}}>
         <nav className="navbar">
@@ -288,6 +288,6 @@ export default function App() {
           <p>&copy; {new Date().getFullYear()} Your Name. All rights reserved.</p>
         </footer>
       </div>
-    </div>
+    </>
   );
 }

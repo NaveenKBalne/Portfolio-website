@@ -70,7 +70,9 @@ body {
 .about,
 .projects,
 .contact {
-  min-height: 100vh;
+  min-height: 100vh !important;
+  height: 100vh !important;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -212,9 +214,6 @@ footer {
 
 /* Section base style */
 .section {
-  width: 100vw;
-  min-height: 100vh;
-  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -232,7 +231,7 @@ footer {
 }
 
 /* Section unique backgrounds */
-/* #home.section {
+#home.section {
   background: linear-gradient(120deg, #2575fc 0%, #6a11cb 100%);
   z-index: 1;
 }
@@ -247,7 +246,7 @@ footer {
 #contact.section {
   background: linear-gradient(120deg, #396afc 0%, #2948ff 100%);
   z-index: 1; 
-} */
+}
 
 /* Section headings */
 .section h1, .section h2 {
@@ -561,47 +560,6 @@ footer {
   position: relative;
 }
 
-@media (max-width: 900px) {
-  .about, .projects, .contact {
-    margin: 1rem;
-    padding: 1rem;
-  }
-  .project-list {
-    flex-direction: column;
-    align-items: center;
-  }
-  .section .project-list {
-    flex-direction: column;
-    align-items: center;
-  }
-  .contact-card {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1.5rem;
-    padding: 1.5rem 1rem;
-    max-width: 95vw;
-  }
-  .contact-form {
-    max-width: 100%;
-  }
-  .contact-info {
-    align-items: flex-start;
-    min-width: 0;
-  }
-  .project-list.grid {
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.2rem;
-  }
-  .project-card {
-    min-width: 45vw;
-    max-width: 48vw;
-    flex: 1 0 48%;
-  }
-  .carousel-multi-track {
-    gap: 1rem;
-    max-width: 95vw;
-  }
-}
 
 @media (max-width: 600px) {
   .navbar {
