@@ -195,7 +195,7 @@ body {
   font-size: 1.1rem;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.2s;
+  /* transition: background 0.2s; */
 }
 
 .contact button:hover {
@@ -228,24 +228,29 @@ footer {
   max-width: none;
   z-index: 1;
   overflow: hidden;
+  opacity: 0.3;
+}
+
+.section {
+  height: 100vh;
 }
 
 /* Section unique backgrounds */
 #home.section {
   background: linear-gradient(120deg, #2575fc 0%, #6a11cb 100%);
-  z-index: 1;
+  z-index: -1;
 }
 #about.section {
   background: linear-gradient(120deg, #43e97b 0%, #38f9d7 100%);
-  z-index: 1;
+  z-index: -1;
 }
 #projects.section {
   background: linear-gradient(120deg, #ff9966 0%, #ff5e62 100%);
-  z-index: 1;
+  z-index: -1;
 }
 #contact.section {
   background: linear-gradient(120deg, #396afc 0%, #2948ff 100%);
-  z-index: 1; 
+  z-index: -1; 
 }
 
 /* Section headings */

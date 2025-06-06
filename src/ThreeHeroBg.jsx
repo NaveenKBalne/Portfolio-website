@@ -22,7 +22,7 @@ export default function ThreeHeroBg() {
     const helix = new THREE.Group();
     const turns = 3;
     const points = 100;
-    const radius = 1.2;
+    const radius = 1.7;
     const heightHelix = 3;
 
     for (let i = 0; i < points; i++) {
@@ -102,3 +102,6 @@ export default function ThreeHeroBg() {
     />
   );
 }
+
+
+
